@@ -4,3 +4,4 @@ git commit -m "Add .env.txt to .gitignore"
 git push origin main
 
 .env
+.env
