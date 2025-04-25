@@ -2,48 +2,56 @@
 
 echo "=== 🚀 Starting PercepiYash Deployment ==="
 
-# Step 1: Setup Git repo
-if [ -d .git ]; then
-    echo "✅ Git already initialized. Updating remote..."
-else
-    echo "🔧 Initializing new Git repo..."
-    git init
+# --- SETUP ---
+REPO="stvnXysh/percepiyash-free"
+BRANCH="main"
+
+# Check for GitHub Token
+if [ -z "$GITHUB_TOKEN" ]; then
+  echo "❌ GITHUB_TOKEN is not set. Please export it before running."
+  echo "   Example: export GITHUB_TOKEN=your_token_here"
+  exit 1
 fi
 
-# Step 2: Setup origin with PAT
-GITHUB_USER="stvnXysh"
-REPO_NAME="percepiyash-free"
-TOKEN="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"
-REPO_URL="https://${GITHUB_USER}:${TOKEN}@github.com/${GITHUB_USER}/${REPO_NAME}.git"
+# Setup Git config
+git config --global user.name "Steven Yash"
+git config --global user.email "stevenodige@gmail.com"
 
-git remote remove origin 2>/dev/null
-git remote add origin $REPO_URL
+# Initialize git repo if needed
+if [ ! -d .git ]; then
+  echo "🆕 Initializing Git repository..."
+  git init
+  git remote add origin https://$GITHUB_TOKEN@github.com/$REPO.git
+else
+  echo "✅ Git already initialized. Updating remote..."
+  git remote set-url origin https://$GITHUB_TOKEN@github.com/$REPO.git
+fi
 
-# Step 3: Commit changes
+# Add and commit changes
 git add .
-git commit -m "🔄 Auto deploy commit" || echo "Nothing to commit."
+git commit -m "🔄 Auto deploy commit"
 
-# Step 4: Set branch and push
-git branch -M main
-git push -u origin main
+# Push to GitHub
+echo "⬆️  Pushing to GitHub..."
+git push origin $BRANCH
 
-# Step 5: Post-deploy instructions
-echo ""
 echo "✅ GitHub Push Complete!"
 
-echo ""
-echo "🔗 Render Hosting + Freenom Domain Setup:"
-echo "1. ➕ Go to https://dashboard.render.com and click 'New Web Service' to deploy."
-echo "2. 🌐 Register a free domain (e.g. .ml, .ga, .cf) at: https://freenom.com"
-echo "3. ✉️ Set up email forwarding at: https://improvmx.com"
+# --- OPTIONAL: Post-deployment instructions ---
+cat <<EOF
 
-echo ""
-echo "📌 DNS Settings:"
-echo " - A Record: (Use IP from Render Dashboard)"
-echo " - MX Records:"
-echo "     mx1.improvmx.com (Priority 10)"
-echo "     mx2.improvmx.com (Priority 20)"
+🔗 Render Hosting + Freenom Domain Setup:
+1. ➕ Go to https://dashboard.render.com and click 'New Web Service' to deploy.
+2. 🌐 Register a free domain (e.g. .ml, .ga, .cf) at: https://freenom.com
+3. ✉️ Set up email forwarding at: https://improvmx.com
 
-echo ""
-echo "🎉 Deployment script complete. Check your repo at: https://github.com/${GITHUB_USER}/${REPO_NAME}"
+📌 DNS Settings:
+ - A Record: (Use IP from Render Dashboard)
+ - MX Records:
+     mx1.improvmx.com (Priority 10)
+     mx2.improvmx.com (Priority 20)
+
+🎉 Deployment script complete. Check your repo at: https://github.com/$REPO
+
+EOF
 
