@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: percepiyash-free
+    env: python
+    region: oregon
+    branch: main
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: SECRET_KEY
+        value: cc643919e9ae83d78cbc9d696d153fc6a74f8668f8fe22920dbe521b48caf7fc
+      - key: API_KEY
+        value: your_api_key_here
+      - key: DATABASE_URL
+        value: your_database_url_here
+
