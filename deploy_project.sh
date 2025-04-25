@@ -1,57 +1,48 @@
 #!/bin/bash
 
+# 🚀 Starting PercepiYash Deployment
 echo "=== 🚀 Starting PercepiYash Deployment ==="
 
-# --- SETUP ---
-REPO="stvnXysh/percepiyash-free"
-BRANCH="main"
-
-# Check for GitHub Token
-if [ -z "$GITHUB_TOKEN" ]; then
-  echo "❌ GITHUB_TOKEN is not set. Please export it before running."
-  echo "   Example: export GITHUB_TOKEN=your_token_here"
-  exit 1
-fi
-
-# Setup Git config
-git config --global user.name "Steven Yash"
-git config --global user.email "stevenodige@gmail.com"
-
-# Initialize git repo if needed
-if [ ! -d .git ]; then
-  echo "🆕 Initializing Git repository..."
+# Ensure git is initialized
+if [ ! -d ".git" ]; then
+  echo "Initializing git..."
   git init
-  git remote add origin https://$GITHUB_TOKEN@github.com/$REPO.git
-else
-  echo "✅ Git already initialized. Updating remote..."
-  git remote set-url origin https://$GITHUB_TOKEN@github.com/$REPO.git
 fi
 
-# Add and commit changes
+# Update remote repository URL
+echo "✅ Git already initialized. Updating remote..."
+git remote set-url origin https://github.com/stvnXysh/percepiyash-free.git
+
+# Check for changes and commit
+echo "Checking for changes..."
 git add .
 git commit -m "🔄 Auto deploy commit"
 
-# Push to GitHub
-echo "⬆️  Pushing to GitHub..."
-git push origin $BRANCH
+# Push changes to GitHub (using environment token)
+echo "⬆️ Pushing to GitHub..."
+GITHUB_TOKEN=$(cat .env | grep GITHUB_TOKEN | cut -d '=' -f2)
 
+if [ -z "$GITHUB_TOKEN" ]; then
+  echo "ERROR: GITHUB_TOKEN not found in .env"
+  exit 1
+fi
+
+# Using the token for secure Git push
+git push https://$GITHUB_TOKEN@github.com/stvnXysh/percepiyash-free.git
+
+# Notify about Render Hosting + Freenom Domain Setup
 echo "✅ GitHub Push Complete!"
 
-# --- OPTIONAL: Post-deployment instructions ---
-cat <<EOF
+echo "🔗 Render Hosting + Freenom Domain Setup:"
+echo "1. ➕ Go to https://dashboard.render.com and click 'New Web Service' to deploy."
+echo "2. 🌐 Register a free domain (e.g. .ml, .ga, .cf) at: https://freenom.com"
+echo "3. ✉️ Set up email forwarding at: https://improvmx.com"
 
-🔗 Render Hosting + Freenom Domain Setup:
-1. ➕ Go to https://dashboard.render.com and click 'New Web Service' to deploy.
-2. 🌐 Register a free domain (e.g. .ml, .ga, .cf) at: https://freenom.com
-3. ✉️ Set up email forwarding at: https://improvmx.com
+echo "📌 DNS Settings:"
+echo " - A Record: (Use IP from Render Dashboard)"
+echo " - MX Records:"
+echo "     mx1.improvmx.com (Priority 10)"
+echo "     mx2.improvmx.com (Priority 20)"
 
-📌 DNS Settings:
- - A Record: (Use IP from Render Dashboard)
- - MX Records:
-     mx1.improvmx.com (Priority 10)
-     mx2.improvmx.com (Priority 20)
-
-🎉 Deployment script complete. Check your repo at: https://github.com/$REPO
-
-EOF
+echo "🎉 Deployment script complete. Check your repo at: https://github.com/stvnXysh/percepiyash-free"
 
